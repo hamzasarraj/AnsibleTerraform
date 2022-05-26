@@ -1,14 +1,21 @@
 pipeline {
+checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+    userRemoteConfigs: [[url: 'http://git-server/user/repository.git']]])
          agent any
          stages {
-                 stage('Build') {
+                 stage(' terraform init') {
                  steps {
-                     echo 'Hi, GeekFlare. Starting to build the App.'
+                     sh 'terraform init '
                  }
                  }
-                 stage('Test') {
+                 stage('terraform plan') {
                  steps {
-                    input('Do you want to proceed?')
+                    sh 'terraform plan'
+                 }
+                 }
+                stage('Terraform apply') {
+                steps {
+                sh label: '', script: 'terraform apply --auto-approve'
                  }
                  }
                  stage('Deploy') {
